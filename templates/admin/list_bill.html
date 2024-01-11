@@ -1,0 +1,45 @@
+{% extends '/admin/base.html' %}
+{% block body %}
+<table class="table table-striped table-bordered table-hover model-list">
+    <thead>
+    <tr>
+        <th class="">&nbsp;</th>
+        <th class="column-header">ID phiếu đặt</th>
+        <th class="column-header">ID phiếu thuê</th>
+        <th class="column-header">Tên người đặt</th>
+        <th class="column-header">Ngày đặt phòng</th>
+        <th class="column-header">Ngày trả phòng</th>
+
+    </tr>
+    </thead>
+    <tbody>
+    {% for i in data %}
+    <tr>
+        <td class="list-buttons-column">
+            <a class="icon" data-target="#fa_modal_window" title="Edit Record"
+               href="/admin/phieudatphong/edit/?id=1&amp;url=/admin/phieudatphong/&amp;modal=True" data-toggle="modal">
+                <span class="fa fa-pencil glyphicon glyphicon-pencil"></span>
+            </a>
+        </td>
+        <td>
+            {{i.idPhieu}}
+        </td>
+        <td>
+
+            {{i.idDatPhong}}
+        </td>
+        <td>
+            {{i.phieuThuePhong.tenNguoiDat}}
+        </td>
+           <td>
+            {{i.phieuThuePhong.ngayDatPhong}}
+        </td>
+           <td>
+            {{i.phieuThuePhong.ngayTraPhong}}
+        </td>
+    </tr>
+    {%endfor%}
+    </tbody>
+</table>
+
+{% endblock %}

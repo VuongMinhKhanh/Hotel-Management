@@ -1,6 +1,7 @@
 from models import *
 from __init__ import app, db
 import hashlib
+from sqlalchemy import or_, and_
 
 
 def get_all_loai_phong():
@@ -51,23 +52,65 @@ def auth_user(username, password):
                              User.password.__eq__(password)).first()
 
 
-def get_suite_id(suite):
-    return LoaiPhong.query.filter(LoaiPhong.loai_phong == suite).first().id
+def get_room_type_id(room_type):
+    return LoaiPhong.query.filter(LoaiPhong.loai_phong == room_type).first().id
 
 
-def count_rooms_by_suite(suite):
-    id = get_suite_id(suite)
+def rooms_by_suite(suite):
+    id = get_room_type_id(suite)
     rooms = Phong.query.filter(Phong.id_loaiphong == id).all()
     return [room.id for room in rooms]
 
 
-def count_rooms_by_rent_time(suite, checkin, checkout):
-    rooms = count_rooms_by_suite(suite)
+def rooms_by_rent_time(suite, checkin, checkout):
+    rooms = rooms_by_suite(suite)
 
-    return ThoiGianTraThuePhong.query.filter(ThoiGianTraThuePhong.id_phong.in_(rooms),
-                                             ThoiGianTraThuePhong.thoi_gian_thue >= checkin,
-                                             ThoiGianTraThuePhong.thoi_gian_tra <= checkout).count()
+    # avail_rooms = ThoiGianTraThuePhong.query.filter(ThoiGianTraThuePhong.id_phong.in_(rooms),
+    #                                                 or_(and_(ThoiGianTraThuePhong.thoi_gian_thue >= checkin,
+    #                                                          ThoiGianTraThuePhong.thoi_gian_thue >= checkout),
+    #                                                     and_(ThoiGianTraThuePhong.thoi_gian_tra <= checkout,
+    #                                                          ThoiGianTraThuePhong.thoi_gian_tra <= checkin)
+    #                                                     )).all()
+    invalid_rooms = ThoiGianTraThuePhong.query.filter(ThoiGianTraThuePhong.id_phong.in_(rooms),
+                                                    ThoiGianTraThuePhong.thoi_gian_tra >= checkin,
+                                                    ThoiGianTraThuePhong.thoi_gian_thue <= checkout).all()
+
+    invalid_rooms = [room.id_phong for room in invalid_rooms]
+
+    avail_rooms = list(filter(lambda x: x not in invalid_rooms, rooms))
+    return avail_rooms
 
 
-def check_available(suite, checkin, checkout):
-    pass
+def get_id_customer_by_cccd(cccd):
+    return KhachHang.query.filter(KhachHang.cccd.__eq__(cccd)).first().id
+
+
+def get_id_user_by_cccd(cccd):
+    return User.query.filter(User.cccd.__eq__(cccd)).first().id
+
+
+def get_room_types():
+    return [type.loai_phong for type in LoaiPhong.query.all()];
+
+
+def get_receptionist_names():
+    return [rec.ho + " " + rec.ten for rec in LeTan.query.all()]
+
+
+def check_cccd(cccd):
+    avail = User.query.filter(User.cccd == cccd).first()
+    if avail:
+        return True
+    else:
+        return False
+
+
+def get_id_user_by_name(fname, lname):
+    return User.query.filter(User.ho == fname, User.ten == lname).first().id
+
+
+def check_booking_time(id_customer, id_room, start_date, end_date):
+    return ThoiGianTraThuePhong.query.filter(ThoiGianTraThuePhong.id_khachhang == id_customer,
+                                             ThoiGianTraThuePhong.id_phong == id_room,
+                                             ThoiGianTraThuePhong.thoi_gian_thue == start_date,
+                                             ThoiGianTraThuePhong.thoi_gian_tra == end_date).first()

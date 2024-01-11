@@ -489,3 +489,81 @@
     padding-right: 0;
     border-right: none;
 }
+
+
+/*<!-- HTML !-->*/
+/*<button class="button-37" role="button">Button 37</button>*/
+
+/* CSS */
+.button-37 {
+  background-color: #13aa52;
+  border: 1px solid #13aa52;
+  border-radius: 4px;
+  box-shadow: rgba(0, 0, 0, .1) 0 2px 4px 0;
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  font-family: "Akzidenz Grotesk BQ Medium", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  outline: none;
+  outline: 0;
+  padding: 10px 25px;
+  text-align: center;
+  transform: translateY(0);
+  transition: transform 150ms, box-shadow 150ms;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.button-37:hover {
+  box-shadow: rgba(0, 0, 0, .15) 0 3px 9px 0;
+  transform: translateY(-2px);
+}
+
+@media (min-width: 768px) {
+  .button-37 {
+    padding: 10px 30px;
+  }
+}
+
+/** Booking **/
+#container {
+  max-width: 550px;
+}
+
+    .step-container {
+      position: relative;
+      text-align: center;
+      transform: translateY(-43%);
+    }
+
+    .step-circle {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: #fff;
+      border: 2px solid #007bff;
+      line-height: 30px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+      cursor: pointer; /* Added cursor pointer */
+    }
+
+    .step-line {
+      position: absolute;
+      top: 16px;
+      left: 50px;
+      width: calc(100% - 100px);
+      height: 2px;
+      background-color: #007bff;
+      z-index: -1;
+    }
+
+    #multi-step-form{
+		overflow-x: hidden;
+	}

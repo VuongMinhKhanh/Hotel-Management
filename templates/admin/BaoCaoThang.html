@@ -1,0 +1,77 @@
+{% extends '/admin/base.html' %}
+{% block body %}
+<div class="row">
+    <form action="/baocao">
+        <div class="row">
+            <div class="col-md-6 form-group">
+                <label class="input-title">Từ Ngày:</label>
+                <input type="date" name="from_date" placeholer="Thoi gian bat dau..." class="form-control"/>
+            </div>
+            <div class="col-md-6 form-group">
+                <label class="input-title">Đến Ngày:</label>
+                <input type="date" name="to_date" placeholer="Thoi gian ket thuc..." class="form-control"/>
+            </div>
+        </div>
+        <input type="submit" value="Thống kê" class="btn btn-warning"/>
+    </form>
+    <table class="table table-striped table-bordered table-hover model-list">
+        <thead>
+        <tr>
+            <th class="">&nbsp;</th>
+            <th class="column-header">STT</th>
+            <th class="column-header">Loại phòng</th>
+            <th class="column-header">Doanh Thu</th>
+            <th class="column-header">Số lượt thuê</th>
+            <th class="column-header">Tỉ lệ</th>
+        </tr>
+        </thead>
+    </table>
+
+    <h2>Biểu đồ:</h2>
+    <div class="col-md-7 col-xs-12">
+        <canvas id="BaoCaoThang"></canvas>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    let labels=[], info = [];
+
+    {% for c in bcao %}
+        labels.push('{{ c[0]}}')
+        {%for x in tongdoanhthu%}
+        info.push({{c[1]/x[1]}})
+        {%endfor%}
+
+    {%endfor%}
+
+    let colors=[]
+    for (let i=0; i< labels.length; i++){
+        let r=parseInt(Math.random()* 255)
+        let g=parseInt(Math.random()* 255)
+        let b=parseInt(Math.random()* 255)
+        colors.push(`rgb(${r}, ${g}, ${b})`)
+        }
+
+
+      const data = {
+      labels:labels,
+      datasets: [{
+        label: 'Báo Cáo Tháng',
+        data: info,
+        backgroundColor: colors,
+        hoverOffset: 4
+      }]
+    };
+
+    const config = {
+      type: 'doughnut',
+      data: data,
+    };
+
+    window.onload=function(){
+      let ctx= document.getElementById('BaoCaoThang').getContext('2d')
+      new Chart(ctx, config);
+    }
+
+</script>
+{% endblock %}

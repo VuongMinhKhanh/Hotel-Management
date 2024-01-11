@@ -1,0 +1,151 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}Đặt phòng{% endblock %}
+
+{% block content %}
+
+    <div class="m-5">
+        <form id="formData" method="post" action="" class="">
+            <div class="mb-3">
+                <label for="" class="form-label">Loại phòng:</label>
+                <input type="text" class="form-control" id="suite" name="suite" value="">
+            </div>
+            <div class="mb-3">
+                <label for="" class="form-label">Số lượng phòng:</label>
+                <input type="number" class="form-control" id="quantity" placeholder="1" name="quantity">
+            </div>
+            <div class="mb-3">
+                <label for="" class="form-label">Ngày đặt phòng:</label>
+                <input type="date" class="form-control" id="checkin_day" name="checkin_day">
+            </div>
+            <div class="mb-3">
+                <label for="" class="form-label">Ngày trả:</label>
+                <input type="date" class="form-control" id="checkout_day" name="checkout_day">
+            </div>
+
+            <button type="button" onclick="checkAvail()" class="btn btn-primary">Kiểm tra tình trạng phòng</button>
+        </form>
+    </div>
+    <div class="m-5">
+        <form id="customerData" method="post" action="" class="">
+            <div class="mb-3">
+                <label for="" class="form-label">Họ tên:</label>
+                <input type="text" class="form-control" id="" name="name" value="Vương Minh Khánh">
+            </div>
+            <div class="mb-3">
+                <label for="" class="form-label">CCCD:</label>
+                <input type="text" class="form-control" id="" placeholder="012345" name="cccd" value="07920302">
+            </div>
+            <div class="mb-3">
+                <label for="" class="form-label">Loại khách:</label>
+                <select name="type" id="">
+                    <option value="noi_dia">Nội địa</option>
+                    <option value="nuoc_ngoai">Nước ngoài</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="" class="form-label">Địa chỉ:</label>
+                <input type="text" class="form-control" id="checkout_day" name="address" value="TPHCM">
+            </div>
+            <div class="mb-3">
+                <label for="" class="form-label">Số điện thoại:</label>
+                <input type="text" class="form-control" id="checkout_day" name="phoneNumber" value="0123456">
+            </div>
+            <button type="button" onclick="addCustomer()" class="btn btn-primary">Thêm</button>
+        </form>
+    </div>
+    <table id="customerTable">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>CCCD</th>
+            <th>Loại khách</th>
+            <th>Địa chỉ</th>
+            <th>Số điện thoại</th>
+            <th>Xóa thông tin</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>1</td>
+            <td>Minh Khánh</td>
+            <td>0792030233</td>
+            <td>Nội địa</td>
+            <td>Nguyễn Kiệm</td>
+            <td>012345</td>
+            <td>
+                <button onclick='removeCustomer(this)'>X</button>
+            </td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>Barack Obama</td>
+            <td>098765</td>
+            <td>Nước ngoài</td>
+            <td>Pentagon</td>
+            <td>09876</td>
+            <td>
+                <button onclick='removeCustomer(this)'>X</button>
+            </td>
+        </tr>
+        <!-- Add more rows as needed -->
+        </tbody>
+    </table>
+    <button onclick="retrieveCustomer()">Hoàn tất</button>
+
+    <div class="m-5">
+        <form id="confirmationForm" method="post" action="" class="">
+            <div class="mb-3">
+                <label for="" class="form-label">Loại phòng:</label>
+                <p id="suite"></p>
+            </div>
+            <div class="mb-3">
+                <label for="" class="form-label">Số lượng phòng:</label>
+                <input type="number" class="form-control" id="quantity" placeholder="1" name="quantity">
+            </div>
+            <div class="mb-3">
+                <label for="" class="form-label">Ngày đặt phòng:</label>
+                <input type="date" class="form-control" id="checkin_day" name="checkin_day">
+            </div>
+            <div class="mb-3">
+                <label for="" class="form-label">Ngày trả:</label>
+                <input type="date" class="form-control" id="checkout_day" name="checkout_day">
+            </div>
+            <table id="customerTable">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>CCCD</th>
+                    <th>Loại khách</th>
+                    <th>Địa chỉ</th>
+                    <th>Số điện thoại</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>Minh Khánh</td>
+                    <td>0792030233</td>
+                    <td>Nội địa</td>
+                    <td>Nguyễn Kiệm</td>
+                    <td>012345</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Barack Obama</td>
+                    <td>098765</td>
+                    <td>Nước ngoài</td>
+                    <td>Pentagon</td>
+                    <td>09876</td>
+                </tr>
+                <!-- Add more rows as needed -->
+                </tbody>
+            </table>
+        </form>
+    </div>
+    <a href="/">
+        <button type="submit" onclick="addCustomer()" class="btn btn-primary">Xác nhận</button>
+    </a>
+{% endblock %}

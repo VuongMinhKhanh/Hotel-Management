@@ -11,20 +11,27 @@ import datetime
 
 class UserRole(enum.Enum):
     khach_hang = 1
-    nhan_vien = 2
-    le_tan = 3
-    quan_ly = 4
+    le_tan = 2
+    quan_ly = 3
+
+
+class LoaiKhach(enum.Enum):
+    noi_dia = 1
+    nuoc_ngoai = 2
 
 
 class User(db.Model, UserMixin):
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     username = Column(String(45), unique=True, nullable=True)
     password = Column(String(45), nullable=True)
-    ten = Column(String(45), nullable=False)
     ho = Column(String(22), nullable=False)
+    ten = Column(String(45), nullable=False)
     gioi_tinh = Column(BOOLEAN, nullable=False, default=False)
     ngay_sinh = Column(DATETIME, nullable=True)
     cccd = Column(String(15), nullable=False, unique=True)
+    sdt = Column(String(12))
+    email = Column(String(30))
+    dia_chi = Column(String(100))
     user_role = Column(Enum(UserRole), default=UserRole.quan_ly)
 
     def __str__(self):
@@ -33,21 +40,16 @@ class User(db.Model, UserMixin):
 
 class KhachHang(User):
     id = Column(Integer, ForeignKey(User.id), primary_key=True, nullable=False)
-    nguoi_dat = Column(BOOLEAN, nullable=False, default=False)
+    loai_khach = Column(Enum(LoaiKhach), nullable=False, default=LoaiKhach.noi_dia)
 
-    def DatPhong(self):
+    def dat_phong(self):
         pass
 
 
-class NhanVien(User):
+class LeTan(User):
     id = Column(Integer, ForeignKey(User.id), primary_key=True, nullable=False)
     luong = Column(DOUBLE, nullable=False, default=1000)
-
-
-class LeTan(NhanVien):
-    id = Column(Integer, ForeignKey(NhanVien.id), primary_key=True, nullable=False)
-
-    def ChoThuePhong(self):
+    def cho_thue_phong(self):
         pass
 
 
@@ -100,16 +102,52 @@ class Phong(db.Model):
 
 # khach hang - phong
 class ThoiGianTraThuePhong(db.Model):
-    id_khachhang = Column(Integer, ForeignKey(KhachHang.id), nullable=False)
+    id_khachhang = Column(Integer, ForeignKey(KhachHang.id), nullable=False, primary_key=True)
     id_phong = Column(String(3), ForeignKey(Phong.id), primary_key=True, nullable=False)
-    thoi_gian_thue = Column(DATETIME, nullable=False)
-    thoi_gian_tra = Column(DATETIME, nullable=False)
+    thoi_gian_thue = Column(DATETIME, nullable=False, primary_key=True)
+    thoi_gian_tra = Column(DATETIME, nullable=False, primary_key=True)
+
+
+class NguoiDatPhong(db.Model):
+    id_user = Column(Integer, ForeignKey(User.id), nullable=False, primary_key=True)
+    id_phong = Column(String(10), ForeignKey(Phong.id), nullable=False, primary_key=True)
+    thoi_gian_dat = Column(DATETIME, nullable=False, primary_key=True)
+
+
+class HoaDon(db.Model):
+    id = Column(Integer, primary_key=True, autoincrement=True)
+
+
+class ChiTietHoaDon(db.Model):
+    id_phong = Column(String(10), ForeignKey(Phong.id), nullable=False, primary_key=True)
+    id_hoadon = Column(Integer, ForeignKey(HoaDon.id), nullable=False, primary_key=True)
+    don_gia = Column(DOUBLE, nullable=False)
+
+
+# class PhieuDatPhong(db.Model):
+#     id = Column(Integer, primary_key=True, autoincrement=True)
+#     tenNguoiDat = Column(String(30), nullable=False)
+#     ngayDatPhong = Column(DATETIME, nullable=False)
+#     ngayTraPhong = Column(DATETIME, nullable=False)
+#     cacPhong = relationship('Phong', secondary='ChiTietDatPhong', back_populates='cacPhieuDatPhong')
+#
+#
+# class PhieuThuePhong(db.Model):
+#     idPhieu = Column(Integer, primary_key=True, autoincrement=True)
+#     idDatPhong = Column(Integer, ForeignKey(PhieuDatPhong.id), unique=True)
+#     phieuThuePhong = relationship('PhieuDatPhong')
+#
+#
+# class ChiTietDatPhong(db.Model):
+#     idPhong = Column(Integer, ForeignKey(Phong.id), primary_key=True)
+#     idPhieuDatPhong = Column(Integer, ForeignKey(PhieuThuePhong.idPhieu), primary_key=True)
+#     donGia = Column(Integer, nullable=False)
 
 
 if __name__ == "__main__":
     with app.app_context():
         r""
-        db.create_all()
+        # db.create_all()
         # std = LoaiPhong(id="STD", loai_phong="Standard",
         #                 mo_ta="Là loại phòng cơ bản nhất tại hầu hết các khách sạn, một số khách sạn 5 sao có thể không có loại phòng này. Phòng thường khá nhỏ, được bố trí ở các tầng thấp, không có view đẹp và chỉ gồm những vật dụng cơ bản nhất.",
         #                 dien_tich=15)
@@ -130,7 +168,7 @@ if __name__ == "__main__":
         #                 dien_tich=23)
         # db.session.add_all([std, sup, dlx, sut, std_2br, sup_2br])
         # db.session.commit()
-
+        #
         # table = TienNghi(ten="Bàn", gia_tien=300)
         # single_bed = TienNghi(ten="Giường đơn", gia_tien=1000)
         # double_bed = TienNghi(ten="Giường đôi", gia_tien=1500)
@@ -148,7 +186,7 @@ if __name__ == "__main__":
         # db.session.add_all([table, single_bed, double_bed,AC, wardrobe,
         #                     TV, fridge, pool, wifi, lamp, beach_view,toilet, ornament])
         # db.session.commit()
-
+        #
         # std_1 = LoaiPhong_TienNghi(id_loaiphong="STD", id_tiennghi=1)
         # std_2 = LoaiPhong_TienNghi(id_loaiphong="STD", id_tiennghi=2)
         # std_3 = LoaiPhong_TienNghi(id_loaiphong="STD", id_tiennghi=4)
@@ -221,7 +259,7 @@ if __name__ == "__main__":
         #                     dlx_1, dlx_2, dlx_3, dlx_4, dlx_6, dlx_8, dlx_9, dlx_10, dlx_11,
         #                     sut_1, sut_2, sut_12, sut_11, sut_9, sut_10, sut_8, sut_6, sut_4, sut_3])
         # db.session.commit()
-
+        #
         # srv1 = DichVu(ten="Bơi", gia_tien=100)
         # srv2 = DichVu(ten="Buffet", gia_tien=300)
         # srv3 = DichVu(ten="Message", gia_tien=250)
@@ -231,7 +269,7 @@ if __name__ == "__main__":
         #
         # db.session.add_all([srv1, srv6, srv5, srv4, srv3, srv2])
         # db.session.commit()
-
+        #
         # p101 = Phong(id="101", id_loaiphong="STD")
         # p102 = Phong(id="102", id_loaiphong="STD")
         # p103 = Phong(id="103", id_loaiphong="STD_2br")
@@ -245,13 +283,17 @@ if __name__ == "__main__":
         #
         # db.session.add_all([p301, p401, p201, p202, p203, p101, p103, p102])
         # db.session.commit()
-
+        #
         # time = datetime.datetime(year=2003, month=6, day=19)
-        # us1 = KhachHang(ho="Trần Thanh", ten="Hoàng", ngay_sinh=time.date(), cccd="07228311", user_role=khach_hang)
+        # us1 = KhachHang(ho="Trần Thanh", ten="Hoàng", ngay_sinh=time.date(), cccd="07228311", user_role=UserRole.khach_hang)
         # time = datetime.datetime(year=2023, month=9, day=2)
-        # us2 = LeTan(ho="Vương Minh", ten="Khánh", ngay_sinh=time.date(), cccd="07920302", luong=5000, user_role=le_tan)
+        # us2 = LeTan(ho="Vương Minh", ten="Khánh", ngay_sinh=time.date(), cccd="07920302", luong=5000, user_role=UserRole.le_tan)
         # time = datetime.datetime(year=2003, month=1, day=1)
-        # us3 = KhachHang(ho="Huỳnh Duy", ten="Đông", ngay_sinh=time.date(), cccd="0123456", nguoi_dat=True, user_role=khach_hang)
+        # us3 = KhachHang(ho="Huỳnh Duy", ten="Đông", ngay_sinh=time.date(), cccd="0123456", user_role=UserRole.khach_hang)
+        # admin = User(username='admin', password=hashlib.md5('123'.encode('utf-8')).hexdigest(), ten='admin', ho='admin',
+        #              gioi_tinh=True, cccd="123", user_role=UserRole.quan_ly)
+        # db.session.add(admin)
+        # db.session.commit()
         # db.session.add_all([us1, us2, us3])
         # db.session.commit()
         #
@@ -261,8 +303,14 @@ if __name__ == "__main__":
         # cki = datetime.datetime(year=datetime.datetime.today().year, month=2, day=18)
         # cko = datetime.datetime(year=datetime.datetime.today().year, month=2, day=22)
         # rent2 = ThoiGianTraThuePhong(id_khachhang=1, id_phong="301", thoi_gian_thue=cki, thoi_gian_tra=cko)
-        #
-        # db.session.add_all([rent1, rent2])
+        # cki = datetime.datetime(year=datetime.datetime.today().year, month=2, day=1)
+        # cko = datetime.datetime(year=datetime.datetime.today().year, month=2, day=13)
+        # rent3 = ThoiGianTraThuePhong(id_khachhang=1, id_phong="301", thoi_gian_thue=cki, thoi_gian_tra=cko)
+        # db.session.add_all([rent1, rent2, rent3])
         # db.session.commit()
-
-
+        #
+        # booker1 = NguoiDatPhong(id_user=1, id_phong="103", thoi_gian_dat=datetime.datetime.today())
+        # booker2 = NguoiDatPhong(id_user=2, id_phong="301", thoi_gian_dat=datetime.datetime.today())
+        # booker3 = NguoiDatPhong(id_user=3, id_phong="301", thoi_gian_dat=datetime.datetime.today())
+        # db.session.add_all([booker1, booker2, booker3])
+        # db.session.commit()
