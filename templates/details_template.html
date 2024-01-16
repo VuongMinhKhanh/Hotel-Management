@@ -1,0 +1,86 @@
+{% extends 'layout/base.html' %}
+{% block title %}Trang chủ{% endblock %}
+
+{% block content %}
+
+    <div class="container mt-3" id="last-step">
+        <div class="row">
+            <form method="post">
+                <h2 class="text-center">PHIẾU THUÊ PHÒNG</h2>
+                <div class="mt-1 mb-1">
+                    <!-- Step 1 form fields here -->
+                    <div class="row g-3 d-flex align-items-center justify-content-center">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input id="room_type" class="form-control" type="text" style="background: white"
+                                       value="{{ rooms }}" disabled>
+                                <label>Các phòng thuê</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input id="room_quantity" class="form-control" type="text" style="background: white"
+                                       value="{{ booker["ho"] + " " + booker["ten"] }}" disabled>
+                                <label class="" for="">Người đặt phòng</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating date" id="date3" data-target-input="nearest">
+                                <input id="checkin" class="form-control" type="text" style="background: white"
+                                       value="{{ (booking_time[0]["thoi_gian_thue"]) }}" disabled>
+                                <label for="checkin">Ngày nhận phòng</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating date" id="date4" data-target-input="nearest">
+                                <input id="checkout" class="form-control" type="text" style="background: white"
+                                       value="{{ (booking_time[0]["thoi_gian_tra"]) }}" disabled>
+                                <label for="checkout"> Ngày trả phòng</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-2 mb-2">
+                    <div class="row g-3">
+                        <table id="customerTable">
+                            <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Họ tên</th>
+                                <th>Loại khách</th>
+                                <th>CCCD</th>
+                                <th>Địa chỉ</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for i in range(customers|length) %}
+                                <tr>
+                                    <td>{{ i + 1 }}</td>
+                                    <td>{{ customers[i]["ho"] + " " + customers[i]["ten"] }}</td>
+                                    <td>
+                                        {% if (customers[i]["loai_khach"] == noi_dia) %}
+                                            Nội địa
+                                        {% else %}
+                                            Nước ngoài
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ customers[i]["cccd"] }}</td>
+                                    <td>{{ customers[i]["dia_chi"] }}</td>
+                                </tr>
+                            {% endfor %}
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </form>
+            <div class="col mt-1">
+                <div class="col text-center">
+                    <button type="submit" onclick="" class="btn btn-success">Gửi email cho người đặt</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {#<p>{{ booker.column2 }}</p>#}
+    {#<p>{{ booker.column3 }}</p>#}
+{% endblock %}

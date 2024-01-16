@@ -114,3 +114,48 @@ def check_booking_time(id_customer, id_room, start_date, end_date):
                                              ThoiGianTraThuePhong.id_phong == id_room,
                                              ThoiGianTraThuePhong.thoi_gian_thue == start_date,
                                              ThoiGianTraThuePhong.thoi_gian_tra == end_date).first()
+
+
+def get_booking_time(id_khachhang):
+    result_dicts = [obj.__dict__ for obj in
+                    ThoiGianTraThuePhong.query.filter(ThoiGianTraThuePhong.id_khachhang == int(id_khachhang)).all()]
+    return [{k: v for k, v in d.items() if not k.startswith('_')} for d in result_dicts]
+
+
+def get_full_name_by_id(id_user):
+    return User.full_name(User.query.filter(User.id == id_user).first())
+
+
+def get_last_id_user_in_booking_event():
+    return NguoiDatPhong.query.order_by(NguoiDatPhong.id_datphong.desc()).first().id_datphong
+
+
+def check_foreigner(room, start_date, end_date):
+    customers_id = [cus.id_khachhang for cus in ThoiGianTraThuePhong.query.filter_by(id_phong=room,
+                                                     thoi_gian_thue=start_date,
+                                                     thoi_gian_tra=end_date).all()]
+
+    for id in customers_id:
+        region = KhachHang.query.filter_by(id=id).first().loai_khach
+        if region == LoaiKhach.nuoc_ngoai:
+            return True
+
+    return False
+
+
+def get_id_room_type(room):
+    room = str(room)
+    return Phong.query.filter_by(id=room).first().id_loaiphong
+
+
+def get_price(id_room_type):
+    convens = [id.id_tiennghi for id in LoaiPhong_TienNghi.query.filter_by(id_loaiphong=id_room_type).all()]
+    qtt = [id.so_luong for id in LoaiPhong_TienNghi.query.filter_by(id_loaiphong=id_room_type).all()]
+    # print("convens", convens)
+    price = 0.0
+    for i in range(len(convens)):
+        conven_price = TienNghi.query.filter_by(id=convens[i]).first().gia_tien
+        # print("gia tien", conven_price, "qtt", qtt[i])
+        price += conven_price * qtt[i]
+
+    return price

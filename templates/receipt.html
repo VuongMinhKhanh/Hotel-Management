@@ -1,0 +1,61 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}Thanh toán{% endblock %}
+
+{% block content %}
+    <div class="container mt-3">
+        <div class="row">
+            <form method="post" id="receipt">
+                <h2 class="text-center">HÓA ĐƠN THANH TOÁN</h2>
+                <div class="mt-1 mb-1">
+                    <div class="row g-3 d-flex align-items-center justify-content-center">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input id="room_type" class="form-control" type="text" style="background: white"
+                                       value="{{ rooms }}" disabled>
+                                <label>Các phòng thuê</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input id="room_quantity" class="form-control" type="text" style="background: white"
+                                       value="{{ booker["ho"] + " " + booker["ten"] }}" disabled>
+                                <label class="" for="">Người đặt phòng</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating date" id="date3" data-target-input="nearest">
+                                <input id="checkin" class="form-control" type="text" style="background: white"
+                                       value="{{ (booking_time[0]["thoi_gian_thue"]) }}" disabled>
+                                <label for="checkin">Ngày nhận phòng</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating date" id="date4" data-target-input="nearest">
+                                <input id="checkout" class="form-control" type="text" style="background: white"
+                                       value="{{ (booking_time[0]["thoi_gian_tra"]) }}" disabled>
+                                <label for="checkout"> Ngày trả phòng</label>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-floating">
+                                <h2>Tổng tiền</h2>
+                            </div>
+                        </div>
+                        <div class="col-md-10">
+                            <div class="">
+                                <h2 id="room_type" class=" text-danger text-center bg-white " style="font-size: 3em">{{ price }} VND</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+            <div class="col mt-1">
+                <div class="col text-center">
+                    <button type="button" onclick="pay()" class="btn btn-success">Thanh toán</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

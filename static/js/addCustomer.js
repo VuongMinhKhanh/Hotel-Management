@@ -1,5 +1,13 @@
+function confirm() {
+    fetch("/api/confirm", {
+        method: "post"
+    }).then(function (res) {
+        return res.json();
+    })
+}
+
 function addCustomer() {
-    var table= document.getElementById('customerTable')
+    var table = document.getElementById('customerTable')
     // var customer = new FormData(document.getElementById('customerData'));
     var customer = {
         "fname": document.getElementById('fname').value,
@@ -41,8 +49,7 @@ function addCustomer() {
     cell2.innerText = customer["cccd"];
     if (customer["type"] == "noi_dia") {
         cell3.innerText = "Nội địa";
-    }
-    else {
+    } else {
         cell3.innerText = "Nước ngoài";
     }
     cell4.innerText = customer["addr"];
@@ -73,7 +80,6 @@ function retrieveCustomer() {
 
     let booker_type = document.querySelector(".active.booker_type").innerText
     if (active_tab.classList.contains("active")) {
-
         booker = {
             "fname": document.getElementById("booker_fname").value,
             "lname": document.getElementById("booker_lname").value,
@@ -121,36 +127,42 @@ function retrieveCustomer() {
         headers: {
             'Content-Type': 'application/json'
         }
-    }).then(function(res) {
+    }).then(function (res) {
         return res.json();
-    }).then(function(data) {
+    }).then(function (data) {
         if (data === false) {
             alert("Không đủ phòng (mỗi phòng chỉ ở tối đa 3 người")
-        }
-        else {
-            displayStep(3).click();
+        } else {
+            displayStep(3)
 
-            let booking_data = JSON.parse(JSON.stringify(data))
-            const formElement = document.getElementById("confirmationForm");
-            const suite = formElement.querySelector("#suite");
-            suite.innerText = booking_data["suite"];
+            // if (confirm("Bạn có muốn đặt phòng?")) {
+            //     // displayStep(3)
+            // }
+            // else {
+            //
+            // }
+            // if (confirm("Bạn có muốn đặt phòng không?")) {
+            //
+            // }
+            //
+            // info = (JSON.stringify(data))
+            // info = JSON.parse(JSON.stringify(data))
+            // // const customers = JSON.parse(JSON.stringify(customers))
+            // // const booker = JSON.parse(JSON.stringify(booker))
+            // console.log(info)
+            // let form = document.getElementById("last-step")
+            // form.querySelector("#room_type").value = data
+            // form.querySelector("#room_quantity").value = info["avail_rooms"].length
+            // form.querySelector("#checkin").value = info["start_date"]
+            // form.querySelector("#checkout").value = info["end_date"]
+            // displayStep(3).click();
+            // alert(JSON.stringify(data))
         }
-
     });
 }
 
 
-function confirm() {
-    fetch("/api/confirm", {
-        method: "post",
-        body: JSON.stringify(),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    }).then(function(res) {
-        return res.json();
-    })
-}
+
 // var currentId = 1;
 //
 //   function addRow() {

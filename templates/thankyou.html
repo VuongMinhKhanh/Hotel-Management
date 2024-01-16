@@ -1,0 +1,164 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}Cảm ơn vì quý khách đã đặt phòng{% endblock %}
+
+{% block content %}
+<div class="row">
+{#                            <form method="post">#}
+{#                                <div class="mt-1 mb-1">#}
+{#                                    <!-- Step 1 form fields here -->#}
+{#                                    <h3>1: Nhập thông tin đặt phòng</h3>#}
+{#                                    <div class="row g-3 d-flex align-items-center justify-content-center">#}
+{#                                        <div class="col-md-12">#}
+{#                                            <p>Chọn phòng</p>#}
+{#                                            <input id="room_type" class="form-control" type="text" style="background: white" value="deluxe" disabled>#}
+{#                                        </div>#}
+{#                                        <div class="col-md-2">#}
+{#                                            <div class="form-floating">#}
+{#                                                <input id="room_quantity" class="form-control" type="text" style="background: white" value="1" disabled>#}
+{#                                                <label class="" for="">Số lượng</label>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                        <div class="col-md-5">#}
+{#                                            <div class="form-floating date" id="date3" data-target-input="nearest">#}
+{#                                                <input id="checkin" class="form-control" type="text" style="background: white" value="12-01-2024" disabled>#}
+{#                                                <label for="checkin">Ngày đặt phòng</label>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                        <div class="col-md-5">#}
+{#                                            <div class="form-floating date" id="date4" data-target-input="nearest">#}
+{#                                                <input id="checkout" class="form-control" type="text" style="background: white" value="14-01-2024" disabled>#}
+{#                                                <label for="checkout"> Ngày trả phòng</label>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <div class="mt-1 mb-1">#}
+{#                                    <!-- Step 2 form fields here -->#}
+{#                                    <h4>2: Người đặt phòng</h4>#}
+{#                                    <div class="row g-3">#}
+{#                                        <ul class="nav nav-tabs" role="tablist">#}
+{#                                            <li class="nav-item">#}
+{#                                                <a class="nav-link active booker_type" data-bs-toggle="tab"#}
+{#                                                   href="">Khách hàng</a>#}
+{#                                            </li>#}
+{#                                            <li class="nav-item">#}
+{#                                                <a class="nav-link booker_type" data-bs-toggle="tab"#}
+{#                                                   href="">Lễ tân</a>#}
+{#                                            </li>#}
+{#                                        </ul>#}
+{##}
+{#                                        <!-- Tab panes -->#}
+{#                                        <div class="tab-content">#}
+{#                                            <div id="customer" class="container tab-pane active customer-tab"><br>#}
+{#                                                <div class="row g-3">#}
+{#                                                    <div class="col-md-2">#}
+{#                                                        <div class="form-floating mt-1 mb-1">#}
+{#                                                            <input type="text" class="form-control" id="booker_fname"#}
+{#                                                                   placeholder="Your Name" style="background: white" value="fname" disabled>#}
+{#                                                            <label for="name">Họ</label>#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                    <div class="col-md-4">#}
+{#                                                        <div class="form-floating mt-1 mb-1">#}
+{#                                                            <input type="text" class="form-control" id="booker_lname"#}
+{#                                                                   placeholder="Your Name" style="background: white" value="lname" disabled>#}
+{#                                                            <label for="name">Tên</label>#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                    <div class="col-md-6">#}
+{#                                                        <div class="form-floating mt-1 mb-1">#}
+{#                                                            <input type="text" class="form-control" id="booker_cccd"#}
+{#                                                                   placeholder="CCCD" style="background: white" value="cccd" disabled>#}
+{#                                                            <label for="email">CCCD</label>#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                    <div class="col-md-4">#}
+{#                                                        <div class="form-floating mt-1 mb-1">#}
+{#                                                            <input type="text" class="form-control"#}
+{#                                                                   id="booker_phoneNumber"#}
+{#                                                                   placeholder="Your Email" style="background: white" value="sdt" disabled>#}
+{#                                                            <label for="email">Số điện thoại</label>#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                    <div class="col-md-4">#}
+{#                                                        <div class="form-floating mt-1 mb-1">#}
+{#                                                            <input type="email" class="form-control" id="booker_email"#}
+{#                                                                   placeholder="Your Email" style="background: white" value="email" disabled>#}
+{#                                                            <label for="email">Email</label>#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                    <div class="col-md-4">#}
+{#                                                        <div class="form-floating mt-1 mb-1">#}
+{#                                                            <input type="email" class="form-control" id="booker_addr"#}
+{#                                                                   placeholder="Your Email" style="background: white" value="dia chi" disabled>#}
+{#                                                            <label for="email">Địa chỉ</label>#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                </div>#}
+{#                                            </div>#}
+{#                                            <div id="receptionist" class="container tab-pane fade receptionist-tab"><br>#}
+{#                                                <div class=" d-flex align-items-center justify-content-center">#}
+{#                                                    <label>Chọn tên Lễ tân:#}
+{#                                                        <input list="names" id="booker_recep" name="recep"/>#}
+{#                                                    </label>#}
+{#                                                    <datalist id="names">#}
+{#                                                        {% for name in receptionists %}#}
+{#                                                            <option value="{{ name }}">#}
+{#                                                        {% endfor %}#}
+{#                                                    </datalist>#}
+{#                                                </div>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{##}
+{#                                    </div>#}
+{#                                    <h4>3: Khách hàng</h4>#}
+{#                                    <div class="row g-3">#}
+{#                                        <table id="customerTable">#}
+{#                                            <thead>#}
+{#                                            <tr>#}
+{#                                                <th>Họ</th>#}
+{#                                                <th>Tên</th>#}
+{#                                                <th>CCCD</th>#}
+{#                                                <th>Loại khách</th>#}
+{#                                                <th>Địa chỉ</th>#}
+{#                                                <th>Số điện thoại</th>#}
+{#                                                <th>Email</th>#}
+{#                                            </tr>#}
+{#                                            </thead>#}
+{#                                            <tbody>#}
+{#                                            <tr>#}
+{#                                                <td>Vương Minh</td>#}
+{#                                                <td>Khánh</td>#}
+{#                                                <td>0792030233</td>#}
+{#                                                <td>Nội địa</td>#}
+{#                                                <td>Nguyễn Kiệm</td>#}
+{#                                                <td>012345</td>#}
+{#                                                <td>email1</td>#}
+{#                                            </tr>#}
+{#                                            <tr>#}
+{#                                                <td>Obama</td>#}
+{#                                                <td>Barack</td>#}
+{#                                                <td>09876</td>#}
+{#                                                <td>Nước ngoài</td>#}
+{#                                                <td>Pentagon</td>#}
+{#                                                <td>012345</td>#}
+{#                                                <td>email2</td>#}
+{#                                            </tr>#}
+{#                                            </tbody>#}
+{#                                        </table>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </form>#}
+                            <div class="col">
+                                <div class="col text-center">
+                                    <button class="btn btn-primary prev-step col-md-3">Quay lại</button>
+                                </div>
+                            </div>
+                            <div class="col mt-1">
+                                <div class="col text-center">
+                                    <a href="/"><button type="submit" onclick="confirm()" class="btn btn-success">Xác nhận đặt phòng</button></a>
+                                </div>
+                            </div>
+                        </div>
+{% endblock %}

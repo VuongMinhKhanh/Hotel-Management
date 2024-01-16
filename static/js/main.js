@@ -1,5 +1,3 @@
-
-
 (function ($) {
     "use strict";
 
@@ -12,40 +10,40 @@
         }, 1);
     };
     spinner();
-    
-    
+
+
     // Initiate the wowjs
-    new WOW().init();
-    
-    
+    // new WOW().init();
+
+
     // Dropdown on mouse hover
     const $dropdown = $(".dropdown");
     const $dropdownToggle = $(".dropdown-toggle");
     const $dropdownMenu = $(".dropdown-menu");
     const showClass = "show";
-    
-    $(window).on("load resize", function() {
+
+    $(window).on("load resize", function () {
         if (this.matchMedia("(min-width: 992px)").matches) {
             $dropdown.hover(
-            function() {
-                const $this = $(this);
-                $this.addClass(showClass);
-                $this.find($dropdownToggle).attr("aria-expanded", "true");
-                $this.find($dropdownMenu).addClass(showClass);
-            },
-            function() {
-                const $this = $(this);
-                $this.removeClass(showClass);
-                $this.find($dropdownToggle).attr("aria-expanded", "false");
-                $this.find($dropdownMenu).removeClass(showClass);
-            }
+                function () {
+                    const $this = $(this);
+                    $this.addClass(showClass);
+                    $this.find($dropdownToggle).attr("aria-expanded", "true");
+                    $this.find($dropdownMenu).addClass(showClass);
+                },
+                function () {
+                    const $this = $(this);
+                    $this.removeClass(showClass);
+                    $this.find($dropdownToggle).attr("aria-expanded", "false");
+                    $this.find($dropdownMenu).removeClass(showClass);
+                }
             );
         } else {
             $dropdown.off("mouseenter mouseleave");
         }
     });
-    
-    
+
+
     // Back to top button
     $(window).scroll(function () {
         if ($(this).scrollTop() > 300) {
@@ -61,10 +59,10 @@
 
 
     // Facts counter
-    $('[data-toggle="counter-up"]').counterUp({
-        delay: 10,
-        time: 2000
-    });
+    // $('[data-toggle="counter-up"]').counterUp({
+    //     delay: 10,
+    //     time: 2000
+    // });
 
 
     // Modal Video
@@ -92,76 +90,97 @@
         margin: 25,
         dots: false,
         loop: true,
-        nav : true,
-        navText : [
+        nav: true,
+        navText: [
             '<i class="bi bi-arrow-left"></i>',
             '<i class="bi bi-arrow-right"></i>'
         ],
         responsive: {
-            0:{
-                items:1
+            0: {
+                items: 1
             },
-            768:{
-                items:2
+            768: {
+                items: 2
             }
         }
     });
-    
+
 })(jQuery);
 
 var currentStep = 1;
 var updateProgressBar;
 
-  function displayStep(stepNumber) {
+function displayStep(stepNumber) {
     if (stepNumber >= 1 && stepNumber <= 3) {
-      $(".step-" + currentStep).hide();
-      $(".step-" + stepNumber).show();
-      currentStep = stepNumber;
-      updateProgressBar();
+        $(".step-" + currentStep).hide();
+        $(".step-" + stepNumber).show();
+        currentStep = stepNumber;
+        updateProgressBar();
     }
-  }
+}
 
-  $(document).ready(function() {
+$(document).ready(function () {
     $('#multi-step-form').find('.step').slice(1).hide();
 
-    $(".next-step").click(function() {
-      if (currentStep < 3) {
-        $(".step-" + currentStep).addClass("animate__animated animate__fadeOutLeft");
-        currentStep++;
-        setTimeout(function() {
-          $(".step").removeClass("animate__animated animate__fadeOutLeft").hide();
-          $(".step-" + currentStep).show().addClass("animate__animated animate__fadeInRight");
-          updateProgressBar();
-        }, 500);
-      }
+    $(".next-step").click(function () {
+        if (currentStep < 3) {
+            $(".step-" + currentStep).addClass("animate__animated animate__fadeOutLeft");
+            currentStep++;
+            setTimeout(function () {
+                $(".step").removeClass("animate__animated animate__fadeOutLeft").hide();
+                $(".step-" + currentStep).show().addClass("animate__animated animate__fadeInRight");
+                updateProgressBar();
+            }, 500);
+        }
     });
 
-    $(".prev-step").click(function() {
-      if (currentStep > 1) {
-        $(".step-" + currentStep).addClass("animate__animated animate__fadeOutRight");
-        currentStep--;
-        setTimeout(function() {
-          $(".step").removeClass("animate__animated animate__fadeOutRight").hide();
-          $(".step-" + currentStep).show().addClass("animate__animated animate__fadeInLeft");
-          updateProgressBar();
-        }, 500);
-      }
+    $(".prev-step").click(function () {
+        if (currentStep > 1) {
+            $(".step-" + currentStep).addClass("animate__animated animate__fadeOutRight");
+            currentStep--;
+            setTimeout(function () {
+                $(".step").removeClass("animate__animated animate__fadeOutRight").hide();
+                $(".step-" + currentStep).show().addClass("animate__animated animate__fadeInLeft");
+                updateProgressBar();
+            }, 500);
+        }
     });
 
-    updateProgressBar = function() {
-      var progressPercentage = ((currentStep - 1) / 2) * 100;
-      $(".progress-bar").css("width", progressPercentage + "%");
+    updateProgressBar = function () {
+        var progressPercentage = ((currentStep - 1) / 2) * 100;
+        $(".progress-bar").css("width", progressPercentage + "%");
     }
-  });
-$( '#multiple-select-optgroup-field' ).select2( {
-    theme: "bootstrap-5",
-    width: '100%',
-    placeholder: $( this ).data( 'placeholder' ),
-    closeOnSelect: false,
-} );
-$( '#multiple-select-field' ).select2( {
-    theme: "bootstrap-5",
-    width: '100%',
-    placeholder: $( this ).data( 'placeholder' ),
-    closeOnSelect: false,
-} );
+});
+// $('#multiple-select-optgroup-field').select2({
+//     theme: "bootstrap-5",
+//     width: '100%',
+//     placeholder: $(this).data('placeholder'),
+//     closeOnSelect: false,
+// });
+// $('#multiple-select-field').select2({
+//         theme: "bootstrap-5",
+//         width: '100%',
+//         placeholder: $(this).data('placeholder'),
+//         closeOnSelect: false,
+//     }
+// );
+
+
+// function getJSON(button) {
+//     if (button.classList.contains("custom-button")) {
+//         var rowId = button.getAttribute('data-id');
+//         // alert(rowId)
+//         fetch(`/getDetails?rowId=${rowId}`, {
+//             method: "GET",
+//             headers: {
+//                 'Content-Type': 'application/json',
+//                 'Accept': 'application/json'
+//             }
+//         }).then(function (res) {
+//             return res.json();
+//         }).then(function (data) {
+//             alert(data)
+//             // alert(JSON.parse(JSON.stringify(data)))
+//         })
+//     }
+// }

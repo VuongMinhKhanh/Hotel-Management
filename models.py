@@ -34,8 +34,11 @@ class User(db.Model, UserMixin):
     dia_chi = Column(String(100))
     user_role = Column(Enum(UserRole), default=UserRole.quan_ly)
 
-    def __str__(self):
-        return self.name
+    # def __str__(self):
+    #     return f"{self.ho} {self.ten}"
+
+    def full_name(self):
+        return f"{self.ho} {self.ten}"
 
 
 class KhachHang(User):
@@ -100,28 +103,33 @@ class Phong(db.Model):
     id_loaiphong = Column(String(45), ForeignKey(LoaiPhong.id), primary_key=True, nullable=False)
 
 
-# khach hang - phong
+
+class NguoiDatPhong(db.Model):
+    id_datphong = Column(Integer, autoincrement=True, primary_key=True)
+    id_user = Column(Integer, ForeignKey(User.id), nullable=False)
+    thoi_gian_dat = Column(DATETIME, nullable=False)
+
+
 class ThoiGianTraThuePhong(db.Model):
     id_khachhang = Column(Integer, ForeignKey(KhachHang.id), nullable=False, primary_key=True)
     id_phong = Column(String(3), ForeignKey(Phong.id), primary_key=True, nullable=False)
     thoi_gian_thue = Column(DATETIME, nullable=False, primary_key=True)
     thoi_gian_tra = Column(DATETIME, nullable=False, primary_key=True)
-
-
-class NguoiDatPhong(db.Model):
-    id_user = Column(Integer, ForeignKey(User.id), nullable=False, primary_key=True)
-    id_phong = Column(String(10), ForeignKey(Phong.id), nullable=False, primary_key=True)
-    thoi_gian_dat = Column(DATETIME, nullable=False, primary_key=True)
+    # id_datphong = relationship("NguoiDatPhong", backref="id_datphong", lazy=True)
+    id_datphong = Column(Integer, ForeignKey(NguoiDatPhong.id_datphong))
 
 
 class HoaDon(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
+    id_datphong = Column(Integer, ForeignKey(NguoiDatPhong.id_datphong))
+    tien_tong = Column(DOUBLE, nullable=False)
 
 
-class ChiTietHoaDon(db.Model):
-    id_phong = Column(String(10), ForeignKey(Phong.id), nullable=False, primary_key=True)
-    id_hoadon = Column(Integer, ForeignKey(HoaDon.id), nullable=False, primary_key=True)
-    don_gia = Column(DOUBLE, nullable=False)
+# class ChiTietHoaDon(db.Model):
+#
+#     id_phong = Column(String(10), ForeignKey(Phong.id), nullable=False, primary_key=True)
+#     id_hoadon = Column(Integer, ForeignKey(HoaDon.id), nullable=False, primary_key=True)
+#     don_gia = Column(DOUBLE, nullable=False)
 
 
 # class PhieuDatPhong(db.Model):
@@ -296,21 +304,25 @@ if __name__ == "__main__":
         # db.session.commit()
         # db.session.add_all([us1, us2, us3])
         # db.session.commit()
+        # time = datetime.datetime(year=2023, month=9, day=2)
+        # lt = LeTan(ho="Lễ", ten="Tên", ngay_sinh=time.date(), cccd="073424243", luong=5000, user_role=UserRole.le_tan, username="nv1", password=hashlib.md5('123'.encode('utf-8')).hexdigest())
+        # db.session.add(lt)
+        # db.session.commit()
+        #
+        # booker1 = NguoiDatPhong(id_user=1, thoi_gian_dat=datetime.datetime.today())
+        # booker2 = NguoiDatPhong(id_user=2, thoi_gian_dat=datetime.datetime.today())
+        # db.session.add_all([booker1, booker2])
+        # db.session.commit()
+        #
         #
         # cki = datetime.datetime(year=datetime.datetime.today().year, month=1, day=8)
         # cko = datetime.datetime(year=datetime.datetime.today().year, month=1, day=10)
-        # rent1 = ThoiGianTraThuePhong(id_khachhang=1, id_phong="103", thoi_gian_thue=cki, thoi_gian_tra=cko)
+        # rent1 = ThoiGianTraThuePhong(id_khachhang=2, id_phong="103", thoi_gian_thue=cki, thoi_gian_tra=cko, id_datphong=1)
         # cki = datetime.datetime(year=datetime.datetime.today().year, month=2, day=18)
         # cko = datetime.datetime(year=datetime.datetime.today().year, month=2, day=22)
-        # rent2 = ThoiGianTraThuePhong(id_khachhang=1, id_phong="301", thoi_gian_thue=cki, thoi_gian_tra=cko)
+        # rent2 = ThoiGianTraThuePhong(id_khachhang=2, id_phong="301", thoi_gian_thue=cki, thoi_gian_tra=cko, id_datphong=1)
         # cki = datetime.datetime(year=datetime.datetime.today().year, month=2, day=1)
         # cko = datetime.datetime(year=datetime.datetime.today().year, month=2, day=13)
-        # rent3 = ThoiGianTraThuePhong(id_khachhang=1, id_phong="301", thoi_gian_thue=cki, thoi_gian_tra=cko)
+        # rent3 = ThoiGianTraThuePhong(id_khachhang=4, id_phong="301", thoi_gian_thue=cki, thoi_gian_tra=cko, id_datphong=2)
         # db.session.add_all([rent1, rent2, rent3])
-        # db.session.commit()
-        #
-        # booker1 = NguoiDatPhong(id_user=1, id_phong="103", thoi_gian_dat=datetime.datetime.today())
-        # booker2 = NguoiDatPhong(id_user=2, id_phong="301", thoi_gian_dat=datetime.datetime.today())
-        # booker3 = NguoiDatPhong(id_user=3, id_phong="301", thoi_gian_dat=datetime.datetime.today())
-        # db.session.add_all([booker1, booker2, booker3])
         # db.session.commit()

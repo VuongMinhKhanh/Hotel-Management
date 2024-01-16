@@ -16,17 +16,22 @@ app.config["PRICE_SQR_COEF"] = 50
 app.secret_key = 'GHFGH&*%^$^*(JHFGHF&Y*R%^$%$^&*TGYGJHFHGVJHGY'
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 app.config["CUSTOMER_LIMIT"] = 3
+app.config["CUSTOMER_EXTRAS"] = 0.25
+app.config["FOREIGNER_EXTRAS"] = 1.5
 db = SQLAlchemy(app=app)
 login = LoginManager(app=app)
+
 
 class DashboardView(AdminIndexView):
     def is_visible(self):
         # This view won't appear in the menu structure
         return False
+
     @expose('/')
     def index(self):
         if current_user.is_authenticated:
             return self.render('admin/index.html')
         return redirect('/admin/login')
+
 
 admin = Admin(app=app, name='QUẢN TRỊ KHÁCH SẠN',template_mode='bootstrap4', index_view=DashboardView())

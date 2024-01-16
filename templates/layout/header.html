@@ -1,4 +1,5 @@
-     <!-- Spinner Start -->
+{% block content %}
+<!-- Spinner Start -->
         <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
             <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
                 <span class="sr-only">Loading...</span>
@@ -52,7 +53,11 @@
                                 <div class="nav-item dropdown">
                                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Trang</a>
                                     <div class="dropdown-menu rounded-0 m-0">
-                                        <a href="booking.html" class="dropdown-item">Đặt phòng</a>
+                                        {% if not current_user.is_authenticated or current_user.user_role == "khach_hang" %}
+                                            <a href="/booking" class="dropdown-item">Đặt phòng </a>
+                                        {% else %}
+                                            <a href="/booking" class="dropdown-item">Cho thuê phòng</a>
+                                        {% endif %}
                                         <a href="team.html" class="dropdown-item">Đội của chúng tôi</a>
                                         <a href="testimonial.html" class="dropdown-item">Phản hồi</a>
                                     </div>
@@ -62,7 +67,7 @@
                             {% if not current_user.is_authenticated %}
                                 <a href="/login" class="btn btn-primary rounded-0 py-4 px-md-5 d-none d-lg-block">Đăng nhập/Đăng ký<i class="fa fa-arrow-right ms-3"></i></a>
                             {% else %}
-                                <a href="/" class="btn btn-primary rounded-0 py-4 px-md-5 d-none d-lg-block">Thông tin cá nhân<i class="fa fa-arrow-right ms-3"></i></a>
+                                <a href="/admin" class="btn btn-primary rounded-0 py-4 px-md-5 d-none d-lg-block">Thông tin cá nhân<i class="fa fa-arrow-right ms-3"></i></a>
                             {% endif %}
                         </div>
                     </nav>
@@ -70,3 +75,4 @@
             </div>
         </div>
         <!-- Header End -->
+{% endblock %}

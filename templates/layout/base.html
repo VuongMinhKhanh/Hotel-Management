@@ -52,8 +52,9 @@
 <script src="static/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
 
 <!-- Template Javascript -->
-<script src="static/js/main.js"></script>
-<script src="static/js/checkAvail.js"></script>
-<script src="static/js/addCustomer.js"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/checkAvail.js') }}"></script>
+<script src="{{ url_for('static', filename='js/addCustomer.js') }}"></script>
+<script src="{{ url_for('static', filename='js/pay.js') }}"></script>
 </body>
 </html>
