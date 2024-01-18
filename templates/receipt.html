@@ -44,7 +44,8 @@
                         </div>
                         <div class="col-md-10">
                             <div class="">
-                                <h2 id="room_type" class=" text-danger text-center bg-white " style="font-size: 3em">{{ price }} VND</h2>
+                                <h2 id="room_type" class=" text-danger text-center bg-white "
+                                    style="font-size: 3em">{{ price }} VND</h2>
                             </div>
                         </div>
                     </div>
@@ -53,9 +54,23 @@
             </form>
             <div class="col mt-1">
                 <div class="col text-center">
-                    <button type="button" onclick="pay()" class="btn btn-success">Thanh toán</button>
+                    <button type="button" class="btn btn-success">In hóa đơn</button>
                 </div>
             </div>
+            {% if is_paid %}
+                <div class="col mt-1">
+                    <div class="col text-center">
+                        <button type="button" class="btn btn-success" disabled>Đã thanh toán</button>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col mt-1">
+                    <div class="col text-center">
+                        <button type="button" onclick="pay()" class="btn btn-success">Thanh toán</button>
+                    </div>
+                </div>
+            {% endif %}
+
         </div>
     </div>
 {% endblock %}

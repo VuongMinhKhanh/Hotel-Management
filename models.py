@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DOUBLE, ForeignKey, BOOLEAN, Enum, LargeBinary, DATETIME
+from sqlalchemy import Column, Integer, String, DOUBLE, ForeignKey, BOOLEAN, Enum, LargeBinary, DATETIME, FLOAT
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from __init__ import app, db
@@ -103,11 +103,11 @@ class Phong(db.Model):
     id_loaiphong = Column(String(45), ForeignKey(LoaiPhong.id), primary_key=True, nullable=False)
 
 
-
-class NguoiDatPhong(db.Model):
+class PhieuDatThuePhong(db.Model):
     id_datphong = Column(Integer, autoincrement=True, primary_key=True)
     id_user = Column(Integer, ForeignKey(User.id), nullable=False)
     thoi_gian_dat = Column(DATETIME, nullable=False)
+    cho_thue = Column(BOOLEAN, nullable=False, default=False)
 
 
 class ThoiGianTraThuePhong(db.Model):
@@ -116,13 +116,13 @@ class ThoiGianTraThuePhong(db.Model):
     thoi_gian_thue = Column(DATETIME, nullable=False, primary_key=True)
     thoi_gian_tra = Column(DATETIME, nullable=False, primary_key=True)
     # id_datphong = relationship("NguoiDatPhong", backref="id_datphong", lazy=True)
-    id_datphong = Column(Integer, ForeignKey(NguoiDatPhong.id_datphong))
+    id_datphong = Column(Integer, ForeignKey(PhieuDatThuePhong.id_datphong))
 
 
 class HoaDon(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
-    id_datphong = Column(Integer, ForeignKey(NguoiDatPhong.id_datphong))
-    tien_tong = Column(DOUBLE, nullable=False)
+    id_datphong = Column(Integer, ForeignKey(PhieuDatThuePhong.id_datphong))
+    tien_tong = Column(FLOAT, nullable=False)
 
 
 # class ChiTietHoaDon(db.Model):
@@ -155,7 +155,7 @@ class HoaDon(db.Model):
 if __name__ == "__main__":
     with app.app_context():
         r""
-        # db.create_all()
+        db.create_all()
         # std = LoaiPhong(id="STD", loai_phong="Standard",
         #                 mo_ta="Là loại phòng cơ bản nhất tại hầu hết các khách sạn, một số khách sạn 5 sao có thể không có loại phòng này. Phòng thường khá nhỏ, được bố trí ở các tầng thấp, không có view đẹp và chỉ gồm những vật dụng cơ bản nhất.",
         #                 dien_tich=15)
@@ -309,8 +309,8 @@ if __name__ == "__main__":
         # db.session.add(lt)
         # db.session.commit()
         #
-        # booker1 = NguoiDatPhong(id_user=1, thoi_gian_dat=datetime.datetime.today())
-        # booker2 = NguoiDatPhong(id_user=2, thoi_gian_dat=datetime.datetime.today())
+        # booker1 = PhieuDatThuePhong(id_user=1, thoi_gian_dat=datetime.datetime.today())
+        # booker2 = PhieuDatThuePhong(id_user=2, thoi_gian_dat=datetime.datetime.today(), cho_thue=True)
         # db.session.add_all([booker1, booker2])
         # db.session.commit()
         #

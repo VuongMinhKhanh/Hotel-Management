@@ -233,7 +233,7 @@ def confirm_booking():
     #         # print(fname, lname)
     #         id_user = get_id_user_by_name(fname, lname)
     #
-    #     book_event = NguoiDatPhong(id_user=id_user,
+    #     book_event = PhieuDatThuePhong(id_user=id_user,
     #                                thoi_gian_dat=datetime.datetime.today())
     #     db.session.add(book_event)
     #     db.session.commit()
@@ -274,10 +274,10 @@ def confirm_booking():
 def get_details():
     id_user = request.args.get("id_user")
     thoi_gian_dat = request.args.get("thoi_gian_dat")
-
+    lastpoint = request.args.get("lastpoint")
     # print("data", id_phong, id_user, thoi_gian_dat)
     # Process the data as needed
-    nguoi_dat_phong = NguoiDatPhong.query.filter_by(id_user=id_user,
+    nguoi_dat_phong = PhieuDatThuePhong.query.filter_by(id_user=id_user,
                                                     thoi_gian_dat=thoi_gian_dat).first()
 
     booker_event = row_to_dict(nguoi_dat_phong)
@@ -308,7 +308,7 @@ def get_details():
 
     return render_template("details_template.html", booker=booker,
                            rooms=rooms, booking_time=booking_time,
-                           customers=customers, noi_dia=LoaiKhach.noi_dia)
+                           customers=customers, noi_dia=LoaiKhach.noi_dia, lastpoint=lastpoint)
 
 
 def row_to_dict(row):
@@ -329,7 +329,7 @@ def get_receipt():
 
     # print("data", id_phong, id_user, thoi_gian_dat)
     # Process the data as needed
-    nguoi_dat_phong = NguoiDatPhong.query.filter_by(id_user=id_user,
+    nguoi_dat_phong = PhieuDatThuePhong.query.filter_by(id_user=id_user,
                                                     thoi_gian_dat=thoi_gian_dat).first()
 
     booker_event = row_to_dict(nguoi_dat_phong)
@@ -363,7 +363,7 @@ def get_receipt():
             res_list.append(room_info[i])
 
     room_info = res_list
-    print("room_info", room_info)
+    # print("room_info", room_info)
 
     # get price
     # print("số ngày", (booking_time[0]["thoi_gian_tra"] - booking_time[0]["thoi_gian_thue"]).days)
@@ -379,8 +379,8 @@ def get_receipt():
                     * days)) * 1000
 
         final_price = "{:,}".format(price)
-        print("final price", final_price)
 
+    # print("final price", final_price)
     # get room's names
     temp_room = list(set(temp_room))
 
@@ -393,19 +393,23 @@ def get_receipt():
         "id_datphong": booker_event["id_datphong"],  # id_phieudat
         "tong_tien": price
     }
-
+    print(is_paid(receipt["id_datphong"]))
     session["receipt"] = receipt
     return render_template("receipt.html", booker=booker,
-                           rooms=rooms, booking_time=booking_time, price=final_price)
+                           rooms=rooms, booking_time=booking_time, price=final_price,
+                           is_paid=is_paid(receipt["id_datphong"]))
 
 
 @app.route("/api/pay", methods=["post"])
 def pay():
     receipt = session.get("receipt")
 
-    print(receipt)
+    print((receipt["tong_tien"]))
 
-    # return redirect(url_for("booking_2"))
+    bill = HoaDon(id_datphong=receipt["id_datphong"], tien_tong=receipt["tong_tien"])
+    db.session.add(bill)
+    db.session.commit()
+
     return jsonify(receipt)
 
 

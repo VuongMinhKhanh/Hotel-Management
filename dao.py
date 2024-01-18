@@ -1,7 +1,7 @@
 from models import *
 from __init__ import app, db
 import hashlib
-from sqlalchemy import or_, and_
+from sqlalchemy import or_, and_, func
 
 
 def get_all_loai_phong():
@@ -72,8 +72,8 @@ def rooms_by_rent_time(suite, checkin, checkout):
     #                                                          ThoiGianTraThuePhong.thoi_gian_tra <= checkin)
     #                                                     )).all()
     invalid_rooms = ThoiGianTraThuePhong.query.filter(ThoiGianTraThuePhong.id_phong.in_(rooms),
-                                                    ThoiGianTraThuePhong.thoi_gian_tra >= checkin,
-                                                    ThoiGianTraThuePhong.thoi_gian_thue <= checkout).all()
+                                                      ThoiGianTraThuePhong.thoi_gian_tra >= checkin,
+                                                      ThoiGianTraThuePhong.thoi_gian_thue <= checkout).all()
 
     invalid_rooms = [room.id_phong for room in invalid_rooms]
 
@@ -127,13 +127,13 @@ def get_full_name_by_id(id_user):
 
 
 def get_last_id_user_in_booking_event():
-    return NguoiDatPhong.query.order_by(NguoiDatPhong.id_datphong.desc()).first().id_datphong
+    return PhieuDatThuePhong.query.order_by(PhieuDatThuePhong.id_datphong.desc()).first().id_datphong
 
 
 def check_foreigner(room, start_date, end_date):
     customers_id = [cus.id_khachhang for cus in ThoiGianTraThuePhong.query.filter_by(id_phong=room,
-                                                     thoi_gian_thue=start_date,
-                                                     thoi_gian_tra=end_date).all()]
+                                                                                     thoi_gian_thue=start_date,
+                                                                                     thoi_gian_tra=end_date).all()]
 
     for id in customers_id:
         region = KhachHang.query.filter_by(id=id).first().loai_khach
@@ -159,3 +159,15 @@ def get_price(id_room_type):
         price += conven_price * qtt[i]
 
     return price
+
+
+def is_paid(id_datphong):
+    print("hoa don", HoaDon.query.filter_by(id_datphong=id_datphong).first() is not None)
+    if HoaDon.query.filter_by(id_datphong=id_datphong).first() is not None:
+        return True
+    else:
+        return False
+
+
+def count_products_by_cate():
+    return db.session.query(TienNghi.id, TienNghi.ten, func.count(TienNghi.id))

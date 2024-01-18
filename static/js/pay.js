@@ -25,6 +25,6 @@ function pay() {
         // alert(JSON.parse(JSON.stringify(data)))
         // location.reload();
 
-        window.location.href = "http://127.0.0.1:5000/admin/nguoidatphong/";
+        location.reload()
     })
 }

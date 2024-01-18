@@ -74,11 +74,29 @@
                     </div>
                 </div>
             </form>
-            <div class="col mt-1">
-                <div class="col text-center">
-                    <button type="submit" onclick="" class="btn btn-success">Gửi email cho người đặt</button>
+            {% if lastpoint == "booking_form" %}
+                <div class="col mt-1">
+                    <div class="col text-center">
+                        <button type="submit" onclick="" class="btn btn-success">Gửi email cho người đặt</button>
+                    </div>
                 </div>
-            </div>
+                <div class="col mt-1">
+                    <div class="col text-center">
+                        <button type="submit" onclick="" class="btn btn-success">Lập phiếu thuê</button>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col mt-1">
+                    <div class="col text-center">
+                        <button type="submit" onclick="" class="btn btn-success">Gửi email cho người đặt</button>
+                    </div>
+                </div>
+                <div class="col mt-1">
+                    <div class="col text-center">
+                        <button type="submit" onclick="" class="btn btn-success">Thanh toán</button>
+                    </div>
+                </div>
+            {% endif %}
         </div>
     </div>
     {#<p>{{ booker.column2 }}</p>#}
