@@ -1,9 +1,13 @@
-function confirm() {
-    fetch("/api/confirm", {
-        method: "post"
-    }).then(function (res) {
-        return res.json();
-    })
+function bookrooms() {
+    if (confirm("Bạn có muốn đặt phòng?")) {
+        fetch("/api/bookrooms", {
+            method: "post"
+        }).then(function (res) {
+            window.location.href = "/"
+            return res.json();
+        })
+    }
+
 }
 
 function addCustomer() {
@@ -76,10 +80,9 @@ function retrieveCustomer() {
     var table = document.getElementById("customerTable");
     const customers = [];
     let booker = {};
-    let active_tab = document.getElementById("customer")
+    let customerTab = document.querySelector(".step-2 .tab-content")
 
-    let booker_type = document.querySelector(".active.booker_type").innerText
-    if (active_tab.classList.contains("active")) {
+    if (customerTab != null) {
         booker = {
             "fname": document.getElementById("booker_fname").value,
             "lname": document.getElementById("booker_lname").value,
@@ -87,12 +90,7 @@ function retrieveCustomer() {
             "addr": document.getElementById("booker_addr").value,
             "phoneNum": document.getElementById("booker_phoneNumber").value,
             "email": document.getElementById("booker_email").value,
-            "booker_type": booker_type
-        }
-    } else {
-        booker = {
-            "recep_name": document.getElementById("booker_recep").value,
-            "booker_type": booker_type
+            "booker_type": "Khách hàng"
         }
     }
 
@@ -135,33 +133,44 @@ function retrieveCustomer() {
         } else {
             displayStep(3)
 
-            // if (confirm("Bạn có muốn đặt phòng?")) {
-            //     // displayStep(3)
-            // }
-            // else {
-            //
-            // }
-            // if (confirm("Bạn có muốn đặt phòng không?")) {
-            //
-            // }
-            //
-            // info = (JSON.stringify(data))
-            // info = JSON.parse(JSON.stringify(data))
-            // // const customers = JSON.parse(JSON.stringify(customers))
-            // // const booker = JSON.parse(JSON.stringify(booker))
-            // console.log(info)
-            // let form = document.getElementById("last-step")
-            // form.querySelector("#room_type").value = data
-            // form.querySelector("#room_quantity").value = info["avail_rooms"].length
-            // form.querySelector("#checkin").value = info["start_date"]
-            // form.querySelector("#checkout").value = info["end_date"]
-            // displayStep(3).click();
-            // alert(JSON.stringify(data))
+            let form = document.getElementById("last-step")
+            // step 1
+            form.querySelector("#room_type").value = data[0]["info"]["room_type"]
+            form.querySelector("#room_quantity").value = data[0]["info"]["avail_rooms"].length
+            form.querySelector("#checkin").value = data[0]["info"]["start_date"].join("-")
+            form.querySelector("#checkout").value = data[0]["info"]["end_date"].join("-")
+
+            // step 2
+            let booker = data[2]["booker"]
+            if (booker["booker_type"] == "Khách hàng") {
+                form.querySelector("#booker_fname").value = booker["fname"]
+                form.querySelector("#booker_lname").value = booker["lname"]
+                form.querySelector("#booker_cccd").value = booker["cccd"]
+                form.querySelector("#booker_phoneNumber").value = booker["phoneNum"]
+                form.querySelector("#booker_email").value = booker["email"]
+                form.querySelector("#booker_addr").value = booker["addr"]
+
+            }
+            else {
+                form.querySelector("#booker_recep").value = booker["full_name"]
+            }
+
+            // step 3
+            let sourceTable = document.querySelector(".step.step-2 #customerTable")
+            let destinationTable = form.querySelector("#customerTable")
+            let clonedTable = sourceTable.cloneNode(true)
+
+            destinationTable.innerHTML = ""
+            destinationTable.appendChild(clonedTable.querySelector("thead"))
+            destinationTable.appendChild(clonedTable.querySelector("tbody"))
+
+            let lastColumnIndex = destinationTable.rows[0].cells.length - 1
+            Array.from(destinationTable.rows).forEach(row => {
+                row.deleteCell(lastColumnIndex);
+            });
         }
     });
 }
-
-
 
 // var currentId = 1;
 //

@@ -15,8 +15,6 @@ app.config["PAGE_SIZE"] = 4
 app.config["PRICE_SQR_COEF"] = 50
 app.secret_key = 'GHFGH&*%^$^*(JHFGHF&Y*R%^$%$^&*TGYGJHFHGVJHGY'
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
-app.config["CUSTOMER_LIMIT"] = 3
-app.config["CUSTOMER_EXTRAS"] = 0.25
 app.config["FOREIGNER_EXTRAS"] = 1.5
 db = SQLAlchemy(app=app)
 login = LoginManager(app=app)

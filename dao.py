@@ -1,7 +1,7 @@
 from models import *
 from __init__ import app, db
 import hashlib
-from sqlalchemy import or_, and_, func
+from sqlalchemy import or_, and_, func, text, cast
 
 
 def get_all_loai_phong():
@@ -171,3 +171,49 @@ def is_paid(id_datphong):
 
 def count_products_by_cate():
     return db.session.query(TienNghi.id, TienNghi.ten, func.count(TienNghi.id))
+
+
+def stats_sale(from_date, to_date):
+    stats_data = (db.session.query(Phong.id_loaiphong,
+                                   cast(func.sum(HoaDon.tien_tong).label(''), Integer),
+                                   func.count(HoaDon.id_datphong))
+                  .select_from(Phong)
+                  .join(ThoiGianTraThuePhong, ThoiGianTraThuePhong.id_phong == Phong.id)
+                  .join(PhieuDatThuePhong)
+                  .join(HoaDon)
+                  .group_by(Phong.id_loaiphong)
+                  .filter(ThoiGianTraThuePhong.thoi_gian_tra.between(from_date, to_date))
+                  .all())
+
+    print("stat", stats_data)
+    return [{'loai_phong': loai_phong, 'doanh_thu': doanh_thu, 'luot_thue': luot_thue}
+            for loai_phong, doanh_thu, luot_thue in stats_data]
+
+
+def stats_mat_do(from_date, to_date):
+    stats_data = (db.session.query(Phong.id,
+                                   cast(func.sum(func.datediff(ThoiGianTraThuePhong.thoi_gian_tra,
+                                                          ThoiGianTraThuePhong.thoi_gian_thue
+                                                          )).label(''), Integer))
+                  .select_from(Phong)
+                  .join(ThoiGianTraThuePhong, ThoiGianTraThuePhong.id_phong == Phong.id)
+                  .join(PhieuDatThuePhong)
+                  .group_by(Phong.id)
+                  .filter(ThoiGianTraThuePhong.thoi_gian_tra.between(from_date, to_date))
+                  .all())
+
+    print("stats", stats_data)
+    return [{'ma_phong': ma_phong, 'so_ngay_thue': (so_ngay_thue)}
+            for ma_phong, so_ngay_thue in stats_data]
+
+
+def get_customer_limit_value():
+    return int(QuyDinh.query.filter_by(regulation=RegulationEnum.customer_limit.name).first().value)
+
+
+def get_customer_extras_value():
+    return QuyDinh.query.filter_by(regulation=RegulationEnum.customer_extras.name).first().value
+
+
+def get_foreigner_extras_value():
+    return QuyDinh.query.filter_by(regulation=RegulationEnum.foreigner_extras.name).first().value

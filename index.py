@@ -6,7 +6,10 @@ from flask_admin.helpers import get_form_data
 from flask_admin.babel import gettext
 from flask import session as login_session
 import os
-
+import base64
+from io import BytesIO
+import send_file
+from send_file import *
 from sqlalchemy.orm import class_mapper
 
 import dao
@@ -171,10 +174,9 @@ def retrieve_customer():
     booking_info = session.get('booking_info')
 
     # print("1", len(booking_info[0]["info"].get("avail_rooms")))
-
     for bkinfo in booking_info:
         if bkinfo.get("info"):
-            if len(bkinfo.get("info").get("avail_rooms")) * 3 < len(customers):
+            if len(bkinfo.get("info").get("avail_rooms")) * get_customer_limit_value() < len(customers):
                 return jsonify(False)
 
     all_customers = []
@@ -187,17 +189,23 @@ def retrieve_customer():
             booking_info = [item for item in booking_info if all(key not in item for key in keys_to_remove)]
 
     booking_info.append({"customers": all_customers})
-    booking_info.append({"booker": booker})
+    print("booker", (booker))
+    if bool(booker):
+        booking_info.append({"booker": booker})
+    else:
+        booking_info.append({"booker": {
+            "full_name": current_user.ho + " " + current_user.ten,
+            "booker_type": "Lễ tân"
+        }})
 
     session['booking_info'] = booking_info
     print("booking info:", booking_info)
-    return jsonify()
+    return jsonify(booking_info)
 
 
-@app.route('/api/confirm', methods=['post'])
+@app.route('/api/bookrooms', methods=['post'])
 def confirm_booking():
     booking_info = session.get('booking_info')
-
     info = next((item['info'] for item in booking_info if 'info' in item), {})
     booker = next((item['booker'] for item in booking_info if 'booker' in item), {})
     customers = next((item['customers'] for item in booking_info if 'customers' in item), [])
@@ -205,68 +213,81 @@ def confirm_booking():
     # print(info) # {'avail_rooms': ['301'], 'end_date': ['2024', '01', '10'], 'room_type': 'Deluxe', 'start_date': ['2024', '01', '10']}
     # print(info["avail_rooms"]) # ['301']
 
-    # start adding to db
-    # for customer in customers:
-    #     if customer.get("type") == "Nội địa":
-    #         type = LoaiKhach.noi_dia
-    #     else:
-    #         type = LoaiKhach.nuoc_ngoai
-    #
-    #     if not check_cccd(customer["cccd"]):
-    #         cus = KhachHang(ho=customer.get("fname"), ten=customer.get("lname"), cccd=customer.get("cccd"),
-    #                         loai_khach=type, sdt=customer.get("phoneNum"),
-    #                         email=customer.get("email"), dia_chi=customer.get("addr"),
-    #                         user_role=UserRole.khach_hang)
-    #         db.session.add(cus)
-    #         db.session.commit()
-    #
-    # id_datphong = 0
-    #
-    # for room in info["avail_rooms"]:
-    #     if booker["booker_type"] == "Khách hàng":
-    #         id_user = get_id_user_by_cccd(booker["cccd"])
-    #
-    #     else:
-    #         split_name = booker["recep_name"].split(" ")
-    #         fname = " ".join(split_name[0: len(split_name) - 1])
-    #         lname = split_name[-1]
-    #         # print(fname, lname)
-    #         id_user = get_id_user_by_name(fname, lname)
-    #
-    #     book_event = PhieuDatThuePhong(id_user=id_user,
-    #                                thoi_gian_dat=datetime.datetime.today())
-    #     db.session.add(book_event)
-    #     db.session.commit()
-    #     id_datphong = get_last_id_user_in_booking_event()
-    #
-    # if booker["booker_type"] == "Khách hàng":
-    #     if not check_cccd(booker["cccd"]):
-    #         bker = User(ho=booker.get("fname"), ten=booker.get("lname"), cccd=booker.get("cccd"),
-    #                     sdt=booker.get("phoneNum"), email=booker.get("email"), dia_chi=booker.get("addr"),
-    #                     user_role=UserRole.khach_hang)
-    #         db.session.add(bker)
-    #         db.session.commit()
-    #
-    # lim = 0
-    # start = 0
-    # for room in info["avail_rooms"]:
-    #     for i in range(start, len(customers)):
-    #         if not check_booking_time(get_id_customer_by_cccd(customers[i].get("cccd")),
-    #                                   room, list_to_datetime(info["start_date"]), list_to_datetime(info["end_date"])):
-    #             rent = ThoiGianTraThuePhong(id_khachhang=get_id_customer_by_cccd(customers[i].get("cccd")),
-    #                                         id_phong=room,
-    #                                         thoi_gian_thue=list_to_datetime(info["start_date"]),
-    #                                         thoi_gian_tra=list_to_datetime(info["end_date"]),
-    #                                         id_datphong=id_datphong)
-    #
-    #             db.session.add(rent)
-    #             db.session.commit()
-    #
-    #         lim += 1
-    #         start += 1
-    #         if lim == app.config["CUSTOMER_LIMIT"]:
-    #             lim = 0
-    #             break
+    # start adding information to db
+    # add customers
+    for customer in customers:
+        if customer.get("type") == "Nội địa":
+            type = LoaiKhach.noi_dia
+        else:
+            type = LoaiKhach.nuoc_ngoai
+
+        if not check_cccd(customer["cccd"]):
+            cus = KhachHang(ho=customer.get("fname"), ten=customer.get("lname"), cccd=customer.get("cccd"),
+                            loai_khach=type, sdt=customer.get("phoneNum"),
+                            email=customer.get("email"), dia_chi=customer.get("addr"),
+                            user_role=UserRole.khach_hang)
+            db.session.add(cus)
+            db.session.commit()
+
+    # add booker as a non-recep
+    print(booker["booker_type"])
+    if booker["booker_type"] == "Khách hàng":
+        if not check_cccd(booker["cccd"]):
+            bker = User(ho=booker.get("fname"), ten=booker.get("lname"), cccd=booker.get("cccd"),
+                        sdt=booker.get("phoneNum"), email=booker.get("email"), dia_chi=booker.get("addr"),
+                        user_role=UserRole.khach_hang)
+            db.session.add(bker)
+            db.session.commit()
+
+    # add booking info
+    for room in info["avail_rooms"]:
+        if booker["booker_type"] == "Khách hàng":
+            id_user = get_id_user_by_cccd(booker["cccd"])
+
+        else:
+            id_user = current_user.id
+
+        book_event = PhieuDatThuePhong(id_user=id_user,
+                                   thoi_gian_dat=datetime.datetime.today())
+        db.session.add(book_event)
+        db.session.commit()
+    id_datphong = get_last_id_user_in_booking_event()
+
+
+
+    # add customers to rooms
+    lim = 0
+    start = 0
+    for room in info["avail_rooms"]:
+        for i in range(start, len(customers)):
+            if not check_booking_time(get_id_customer_by_cccd(customers[i].get("cccd")),
+                                      room, list_to_datetime(info["start_date"]), list_to_datetime(info["end_date"])):
+                rent = ThoiGianTraThuePhong(id_khachhang=get_id_customer_by_cccd(customers[i].get("cccd")),
+                                            id_phong=room,
+                                            thoi_gian_thue=list_to_datetime(info["start_date"]),
+                                            thoi_gian_tra=list_to_datetime(info["end_date"]),
+                                            id_datphong=id_datphong)
+
+                db.session.add(rent)
+                db.session.commit()
+
+            lim += 1
+            start += 1
+            if lim == get_customer_limit_value():
+                lim = 0
+                break
+    return jsonify()
+
+
+@app.route("/api/send_emails", methods=["post"])
+def send_emails():
+    data = request.get_json()
+    emails = data.get('emails')
+    # title = data.get("title")
+    # message = data.get("message")
+    path = data.get("path")
+    # print(emails, message)
+    send_files(emails, path)
     return jsonify()
 
 
@@ -373,12 +394,12 @@ def get_receipt():
         # print("price", get_price(get_id_room_type(room["phong"])))
         price = get_price(get_id_room_type(room["phong"]))
         price = (price
-                 * (int(room["so_luong"] + app.config["CUSTOMER_EXTRAS"] * int(
-                    room["so_luong"] == app.config["CUSTOMER_LIMIT"]))
-                    * (1 + (app.config["FOREIGNER_EXTRAS"] * int(room["nuoc_ngoai"])))
+                 * (int(room["so_luong"] + get_customer_extras_value() * int(
+                    room["so_luong"] == get_customer_limit_value()))
+                    * (1 + (get_foreigner_extras_value() * int(room["nuoc_ngoai"])))
                     * days)) * 1000
 
-        final_price = "{:,}".format(price)
+        str_price = "{:,}".format(price)
 
     # print("final price", final_price)
     # get room's names
@@ -389,14 +410,19 @@ def get_receipt():
     for i in range(1, len(temp_room)):
         rooms += ", " + temp_room[i]
 
+    # print("booker", (booker))
     receipt = {
         "id_datphong": booker_event["id_datphong"],  # id_phieudat
-        "tong_tien": price
+        "tong_tien": price,
+        "booker_full_name": booker["ho"] + " " + booker["ten"],
+        "rooms": rooms,
+        "booking_time": booking_time,
+        "str_price": str_price
     }
-    print(is_paid(receipt["id_datphong"]))
+    # print("form", compose_receipt_file(receipt))
     session["receipt"] = receipt
     return render_template("receipt.html", booker=booker,
-                           rooms=rooms, booking_time=booking_time, price=final_price,
+                           rooms=rooms, booking_time=booking_time, price=str_price,
                            is_paid=is_paid(receipt["id_datphong"]))
 
 
@@ -413,9 +439,95 @@ def pay():
     return jsonify(receipt)
 
 
+@app.route('/api/baocaodoanhthu', methods=['GET'])
+def stats_sale():
+    from_date = request.args.get('from_date')
+    to_date = request.args.get('to_date')
+    return dao.stats_sale(from_date, to_date)
+
+
+@app.route('/api/baocaomatdo', methods=['GET'])
+def stats_mat_do():
+    from_date = request.args.get('from_date')
+    to_date = request.args.get('to_date')
+    return dao.stats_mat_do(from_date, to_date)
+
+
+@app.route('/api/save_form_image', methods=['POST'])
+def save_form_image():
+    # print("start saving")
+    data = request.get_json()
+    receipt = session.get("receipt")
+    img_data = data['imgData']
+
+    # Remove the header from the data URL
+    header, encoded = img_data.split(",", 1)
+    data = base64.b64decode(encoded)
+
+    # Save the image to a file
+    # receipt_form = f"forms\\receipt_form_capture.png"
+    receipt_form = f"forms\\{receipt['booker_full_name']}_{receipt['booking_time'][0]['thoi_gian_thue'].strftime('%Y-%m-%d')}_{receipt['booking_time'][0]['thoi_gian_tra'].strftime('%Y-%m-%d')}_Hóa Đơn.png"
+    # receipt_form = f"forms\\{receipt['booker_full_name']}.png"
+
+    with open(receipt_form, 'wb') as file:
+        file.write(data)
+
+    # print("end saving")
+    return jsonify(receipt_form)
+
+
 if __name__ == "__main__":
     import admin
 
     app.run(debug=True)
     # with app.app_context():
-    #     print(get_id_user_by_name("Vương Minh", "Khánh"))
+        # print(os.path.abspath(""))
+        # print(os.remove("forms\Lễ Tên.png"))
+    #     form = f'''<form method="post" id="receipt">
+    #             <h2 class="text-center">HÓA ĐƠN THANH TOÁN</h2>
+    #             <div class="mt-1 mb-1">
+    #                 <div class="row g-3 d-flex align-items-center justify-content-center">
+    #                     <div class="col-md-6">
+    #                         <div class="form-floating">
+    #                             <input id="room_type" class="form-control" type="text" style="background: white"
+    #                                    value="401" disabled>
+    #                             <label>Các phòng thuê</label>
+    #                         </div>
+    #                     </div>
+    #                     <div class="col-md-6">
+    #                         <div class="form-floating">
+    #                             <input id="room_quantity" class="form-control" type="text" style="background: white"
+    #                                    value="Vương Minh Khánh" disabled>
+    #                             <label class="" for="">Người đặt phòng</label>
+    #                         </div>
+    #                     </div>
+    #                     <div class="col-md-6">
+    #                         <div class="form-floating date" id="date3" data-target-input="nearest">
+    #                             <input id="checkin" class="form-control" type="text" style="background: white"
+    #                                    value="2024-02-09 00:00:00" disabled>
+    #                             <label for="checkin">Ngày nhận phòng</label>
+    #                         </div>
+    #                     </div>
+    #                     <div class="col-md-6">
+    #                         <div class="form-floating date" id="date4" data-target-input="nearest">
+    #                             <input id="checkout" class="form-control" type="text" style="background: white"
+    #                                    value="2024-02-10 00:00:00" disabled>
+    #                             <label for="checkout"> Ngày trả phòng</label>
+    #                         </div>
+    #                     </div>
+    #                     <div class="col-md-2">
+    #                         <div class="form-floating">
+    #                             <h2>Tổng tiền</h2>
+    #                         </div>
+    #                     </div>
+    #                     <div class="col-md-10">
+    #                         <div class="">
+    #                             <h2 id="room_type" class=" text-danger text-center bg-white "
+    #                                 style="font-size: 3em">89,500,000.0 VND</h2>
+    #                         </div>
+    #                     </div>
+    #                 </div>
+    #             </div>
+    #         </form>'''
+
+
